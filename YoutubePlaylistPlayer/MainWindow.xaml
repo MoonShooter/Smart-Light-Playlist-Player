@@ -1,0 +1,105 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:YoutubePlaylistPlayer"
+        xmlns:Wpf="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf" x:Class="YoutubePlaylistPlayer.MainWindow"
+        mc:Ignorable="d"
+        Title="MainWindow" 
+        Height="450" 
+        Width="800"
+        WindowStyle="None">
+    
+    <Grid Margin="0,0,0,10">
+        <Grid.RowDefinitions>
+            <!--Minimize and Close-->
+            <RowDefinition Height="30"/>
+            <!--File Controls-->
+            <RowDefinition Height="30"/>
+            <!--Playlist URL-->
+            <RowDefinition Height="30"/>
+            <!--Web Browser (How do I keep track of you... can I...? do I even bother...?)-->
+            <RowDefinition Height="*"/>
+            <!--Song Name and Time Code-->
+            <RowDefinition Height="50"/>
+            <!--Playback Controls-->
+            <RowDefinition Height="50"/>
+            <!--Hide Controls-->
+            <RowDefinition Height="30"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0"
+              MouseDown="Grid_MouseDown">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="30"/>
+                <ColumnDefinition Width="30"/>
+            </Grid.ColumnDefinitions>
+            
+            <TextBlock Text="The Roxie Player"/>
+            
+            <Button 
+                Grid.Column="1"
+                Content="_" 
+                Click="Minimize_Button_Click"/>
+            <Button 
+                Grid.Column="2"
+                Content="X" 
+                Click="Exit_Button_Click"/>
+            
+        </Grid>
+        <StackPanel Grid.Row="1" 
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Center">
+            <!-- Some of these buttons functionality need to be moved to a Menu or among Menu Items... -->
+            <Button Content="Configure" Margin="10,0,10,0" ToolTip="Configure File Paths and Layout of App..."/>
+            <Button Content="Setup Lights" Margin="10,0,10,0" ToolTip="Set up IP Address for Hub, TP-Link, and other Smart Light Systems..."/>
+            <Button Content="Create New Scene Script" Click="Create_New_Scene_Script_Click" Margin="10,0,10,0" ToolTip="Create a new scene based off some channel and playlist id"/>
+            <Button Content="Open Scene Script" Margin="10,0,10,0"/>
+            <Button Content="Play Target Playlist"
+                    Margin="10,0,10,0"
+                    Click="Play_Playlist_Click"/>
+        </StackPanel>
+        <Label 
+            Grid.Row="2"
+            HorizontalAlignment="Center"
+            Content="{Binding playlistName}"/>
+
+        <Wpf:WebView2
+            x:Name="wv_MainWebView"
+            Grid.Row="3" Source="https://youtu.be/0uVOzkJB-QM?list=PLrG1iouQgY9ELnwlPPVEoC9Fd-6_8cOzf"/>
+
+        <StackPanel Grid.Row="4"
+                    Orientation="Vertical"
+                    HorizontalAlignment="Center">
+            <TextBlock Text="Name of Video"
+                       TextAlignment="Center"
+                       Height="20"/>
+            <TextBlock Text="Time Code...?"
+                       TextAlignment="Center"
+                       Height="20"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="5"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Center"
+                    Margin="10">
+            <Button Content="Play" Margin="10,0,10,0" Click="Play_Button_Click"/>
+            <Button Content="Pause" Margin="10,0,10,0" Click="Pause_Button_Click"/>
+            <Button Content="Next Song" Margin="10,0,10,0"/>
+            <Button Content="Prev Song" Margin="10,0,10,0"/>
+        </StackPanel>
+
+        <Grid Grid.Row="6">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="100"/>
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Column="1"
+                    Content="Hide Controls"/>
+        </Grid>
+    </Grid>
+</Window>
