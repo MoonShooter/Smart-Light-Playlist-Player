@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using HueApi;
-using HueApi.BridgeLocator;
-using HueApi.Models;
 using Q42.HueApi;
 using Q42.HueApi.Interfaces;
 
@@ -13,23 +10,21 @@ namespace YoutubePlaylistPlayer.services
 {
     internal class SmartDeviceCommsService
     {
-        public SmartDeviceCommsService()
+        public SmartDeviceCommsService(string ip)
         {
-            SetupLights();
+            SetupLights(ip);
         }
 
         #region General
 
-        public void SetupLights()
+        public void SetupLights(string ip)
         {
             //Locate Bridge and Gather Metadata
-            FindBridge();
-            FindPhilipsHueBulbs();
-
+            FindBridge(ip);
             //Locate Any Other Smart Bulbs (Tuya, Merkury, etc)
         }
 
-        public void CommandLights()
+        public void CommandLights(string command)
         {
 
         }
@@ -37,25 +32,28 @@ namespace YoutubePlaylistPlayer.services
         #endregion
 
         #region Phillips Hue
-        public async void FindBridge()
+        public async void FindBridge(string ip)
         {
-            IBridgeLocator locator = new HttpBridgeLocator();
-            var bridges = await locator.LocateBridgesAsync(TimeSpan.FromSeconds(5));
-            var bridge = bridges.FirstOrDefault();
+            IBridgeLocator locator = new HttpBridgeLocator(); //Or: LocalNetworkScanBridgeLocator, MdnsBridgeLocator, MUdpBasedBridgeLocator
+            var bridges = await locator.LocateBridgesAsync(TimeSpan.FromSeconds(20));
 
-            Console.WriteLine(bridge.IpAddress);
+            //Advanced Bridge Discovery options:
+            bridges = await HueBridgeDiscovery.CompleteDiscoveryAsync(TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(30));
+            bridges = await HueBridgeDiscovery.FastDiscoveryWithNetworkScanFallbackAsync(TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(30));
+            bridges = await HueBridgeDiscovery.CompleteDiscoveryAsync(TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(15));
 
-            ILocalHueClient client = new LocalHueClient(bridge.IpAddress);
+            //Register
+            ILocalHueClient client = new LocalHueClient(ip);
             //Make sure the user has pressed the button on the bridge before calling RegisterAsync
             //It will throw an LinkButtonNotPressedException if the user did not press the button
-            var appKey = await client.RegisterAsync("SeianahPlayerApp", "NicholasEubanksPC"); //Store this info somewhere...
+            var appKey = await client.RegisterAsync("Seianah App", "MyPC");
             //Save the app key for later use
 
+            client.Initialize("RoxieIsAGoodGirl");
         }
 
         public void FindPhilipsHueBulbs()
         {
-            var localHueApi = new LocalHueApi("BRIDGE_IP", "KEY");
 
             //if(hueBridge!=null)
             if (true)
@@ -71,7 +69,6 @@ namespace YoutubePlaylistPlayer.services
         #endregion
 
         List<SmartDevice> lights = new List<SmartDevice>();
-        LocatedBridge bridge = null;
     }
 
     public class SmartDevice
